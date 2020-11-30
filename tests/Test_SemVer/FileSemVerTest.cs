@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.IO.Abstractions;
-
-using Moq;
 using NUnit.Framework;
-using SemVerUtil;
+using SlugEnt.SemVer;
 
 
 namespace Test_SemVer
@@ -53,8 +49,8 @@ namespace Test_SemVer
 
 			Assert.AreEqual( name ,fileSemVer.FileName,"A10:");
 			Assert.AreEqual(prefix,fileSemVer.Prefix,"A20:");
-			Assert.AreEqual(expectedSemVer,fileSemVer.SemVersion.ToString(), "A30:");
-
+			Assert.AreEqual(expectedSemVer,fileSemVer.Version,"A40:");
 		}
+
 	}
 }

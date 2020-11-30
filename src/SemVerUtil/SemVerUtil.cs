@@ -4,7 +4,8 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 
-namespace SemVerUtil
+
+namespace SlugEnt.SemVer
 {
 	public  class SemVerUtil {
 		private readonly IFileSystem _fileSystem;

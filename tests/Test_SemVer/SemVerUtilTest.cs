@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO.Abstractions.TestingHelpers;
 using NUnit.Framework;
-using NUnit.Framework.Api;
-using SemVerUtil;
+using SlugEnt.SemVer;
 
 namespace Test_SemVer
 {
@@ -73,11 +72,11 @@ namespace Test_SemVer
 		public void MostRecentVersion () {
 			var fileSystem = SetupFileSystem();
 
-			SemVerUtil.SemVerUtil semVerUtil = new SemVerUtil.SemVerUtil(fileSystem);
+			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
 			semVerUtil.Initialize(@"C:\", "Ver");
 
 			FileSemVer fileSemVer = semVerUtil.DirectoryMostRecentVersion();
-			Assert.AreEqual(MAX_VERSION,fileSemVer.SemVersion.ToString(),"A10:");
+			Assert.AreEqual(MAX_VERSION,fileSemVer.Version,"A10:");
 		}
 
 
@@ -87,11 +86,11 @@ namespace Test_SemVer
 		{
 			var fileSystem = SetupFileSystem();
 
-			SemVerUtil.SemVerUtil semVerUtil = new SemVerUtil.SemVerUtil(fileSystem);
+			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
 			semVerUtil.Initialize(@"C:\", "Ver");
 
 			FileSemVer fileSemVer = semVerUtil.DirectoryOldestVersion();
-			Assert.AreEqual(FIRST_VERSION, fileSemVer.SemVersion.ToString(), "A10:");
+			Assert.AreEqual(FIRST_VERSION, fileSemVer.Version, "A10:");
 		}
 
 
@@ -103,7 +102,7 @@ namespace Test_SemVer
 		public void NewestNVersions (int n) {
 			var fileSystem = SetupFileSystem();
 
-			SemVerUtil.SemVerUtil semVerUtil = new SemVerUtil.SemVerUtil(fileSystem);
+			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
 			semVerUtil.Initialize(@"C:\", "Ver");
 
 			List<FileSemVer> newest =  semVerUtil.DirectoryNewestVersions(n);
@@ -112,19 +111,19 @@ namespace Test_SemVer
 			for ( int i = 0; i < n; i++ ) {
 				switch ( i ) {
 					case 0:
-						Assert.AreEqual(MAX_VERSION, newest [i++].SemVersion.ToString(), "A20:  Newest item is incorrect");
+						Assert.AreEqual(MAX_VERSION, newest [i++].Version, "A20:  Newest item is incorrect");
 						break;
 					case 1:
-						Assert.AreEqual(VERSION_14, newest[i++].SemVersion.ToString(), "A30:  2nd newest item is incorrect");
+						Assert.AreEqual(VERSION_14, newest[i++].Version, "A30:  2nd newest item is incorrect");
 						break;
 					case 2:
-						Assert.AreEqual(VERSION_13, newest[i++].SemVersion.ToString(), "A40:  3rd newest item is incorrect");
+						Assert.AreEqual(VERSION_13, newest[i++].Version, "A40:  3rd newest item is incorrect");
 						break;
 					case 3:
-						Assert.AreEqual(VERSION_12, newest[i++].SemVersion.ToString(), "A50:  4th newest item is incorrect");
+						Assert.AreEqual(VERSION_12, newest[i++].Version, "A50:  4th newest item is incorrect");
 						break;
 					case 4:
-						Assert.AreEqual(VERSION_11, newest[i++].SemVersion.ToString(), "A60:  5th newest item is incorrect");
+						Assert.AreEqual(VERSION_11, newest[i++].Version, "A60:  5th newest item is incorrect");
 						break;
 				}
 			}
@@ -139,7 +138,7 @@ namespace Test_SemVer
 		{
 			var fileSystem = SetupFileSystem();
 
-			SemVerUtil.SemVerUtil semVerUtil = new SemVerUtil.SemVerUtil(fileSystem);
+			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
 			semVerUtil.Initialize(@"C:\", "Ver");
 
 			List<FileSemVer> oldest = semVerUtil.DirectoryOldestVersions(n);
@@ -150,19 +149,19 @@ namespace Test_SemVer
 				switch (i)
 				{
 					case 0:
-						Assert.AreEqual(FIRST_VERSION, oldest[i++].SemVersion.ToString(), "A20:  Oldest item is incorrect");
+						Assert.AreEqual(FIRST_VERSION, oldest[i++].Version, "A20:  Oldest item is incorrect");
 						break;
 					case 1:
-						Assert.AreEqual(VERSION_2, oldest[i++].SemVersion.ToString(), "A30:  2nd Oldest item is incorrect");
+						Assert.AreEqual(VERSION_2, oldest[i++].Version, "A30:  2nd Oldest item is incorrect");
 						break;
 					case 2:
-						Assert.AreEqual(VERSION_3, oldest[i++].SemVersion.ToString(), "A40:  3rd oldest item is incorrect");
+						Assert.AreEqual(VERSION_3, oldest[i++].Version, "A40:  3rd oldest item is incorrect");
 						break;
 					case 3:
-						Assert.AreEqual(VERSION_4, oldest[i++].SemVersion.ToString(), "A50:  4th oldest item is incorrect");
+						Assert.AreEqual(VERSION_4, oldest[i++].Version, "A50:  4th oldest item is incorrect");
 						break;
 					case 4:
-						Assert.AreEqual(VERSION_5, oldest[i++].SemVersion.ToString(), "A60:  5th oldest item is incorrect");
+						Assert.AreEqual(VERSION_5, oldest[i++].Version, "A60:  5th oldest item is incorrect");
 						break;
 				}
 			}
@@ -175,7 +174,7 @@ namespace Test_SemVer
 		public void NoVersions () {
 			var fileSystem = SetupNoVersions();
 
-			SemVerUtil.SemVerUtil semVerUtil = new SemVerUtil.SemVerUtil(fileSystem);
+			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
 			semVerUtil.Initialize(@"C:\", "Ver");
 
 			FileSemVer fileSemVer = semVerUtil.DirectoryMostRecentVersion();
@@ -203,7 +202,7 @@ namespace Test_SemVer
 		public void KeepNNewVersions (int n) {
 			var fileSystem = SetupFileSystem();
 
-			SemVerUtil.SemVerUtil semVerUtil = new SemVerUtil.SemVerUtil(fileSystem);
+			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
 			semVerUtil.Initialize(@"C:\", "Ver");
 
 			int max = semVerUtil.VersionCount;
@@ -215,49 +214,49 @@ namespace Test_SemVer
 			{
 				switch ( i ) {
 					case 0:
-						Assert.AreEqual(FIRST_VERSION, oldest [i++].SemVersion.ToString(), "A20:  Oldest item is incorrect");
+						Assert.AreEqual(FIRST_VERSION, oldest [i++].Version, "A20:  Oldest item is incorrect");
 						break;
 					case 1:
-						Assert.AreEqual(VERSION_2, oldest [i++].SemVersion.ToString(), "A30:  2nd Oldest item is incorrect");
+						Assert.AreEqual(VERSION_2, oldest [i++].Version, "A30:  2nd Oldest item is incorrect");
 						break;
 					case 2:
-						Assert.AreEqual(VERSION_3, oldest [i++].SemVersion.ToString(), "A40:  3rd oldest item is incorrect");
+						Assert.AreEqual(VERSION_3, oldest [i++].Version, "A40:  3rd oldest item is incorrect");
 						break;
 					case 3:
-						Assert.AreEqual(VERSION_4, oldest [i++].SemVersion.ToString(), "A50:  4th oldest item is incorrect");
+						Assert.AreEqual(VERSION_4, oldest [i++].Version, "A50:  4th oldest item is incorrect");
 						break;
 					case 4:
-						Assert.AreEqual(VERSION_5, oldest [i++].SemVersion.ToString(), "A60:  5th oldest item is incorrect");
+						Assert.AreEqual(VERSION_5, oldest [i++].Version, "A60:  5th oldest item is incorrect");
 						break;
 					case 5:
-						Assert.AreEqual(VERSION_6, oldest [i++].SemVersion.ToString(), "A60:  6th oldest item is incorrect");
+						Assert.AreEqual(VERSION_6, oldest [i++].Version, "A60:  6th oldest item is incorrect");
 						break;
 					case 6:
-						Assert.AreEqual(VERSION_7, oldest [i++].SemVersion.ToString(), "A60:  7th oldest item is incorrect");
+						Assert.AreEqual(VERSION_7, oldest [i++].Version, "A60:  7th oldest item is incorrect");
 						break;
 					case 7:
-						Assert.AreEqual(VERSION_8, oldest [i++].SemVersion.ToString(), "A60:  8th oldest item is incorrect");
+						Assert.AreEqual(VERSION_8, oldest [i++].Version, "A60:  8th oldest item is incorrect");
 						break;
 					case 8:
-						Assert.AreEqual(VERSION_9, oldest [i++].SemVersion.ToString(), "A60:  9th oldest item is incorrect");
+						Assert.AreEqual(VERSION_9, oldest [i++].Version, "A60:  9th oldest item is incorrect");
 						break;
 					case 9:
-						Assert.AreEqual(VERSION_10, oldest [i++].SemVersion.ToString(), "A60:  10th oldest item is incorrect");
+						Assert.AreEqual(VERSION_10, oldest [i++].Version, "A60:  10th oldest item is incorrect");
 						break;
 					case 10:
-						Assert.AreEqual(VERSION_11, oldest [i++].SemVersion.ToString(), "A60:  11th oldest item is incorrect");
+						Assert.AreEqual(VERSION_11, oldest [i++].Version, "A60:  11th oldest item is incorrect");
 						break;
 					case 11:
-						Assert.AreEqual(VERSION_12, oldest [i++].SemVersion.ToString(), "A60:  12th oldest item is incorrect");
+						Assert.AreEqual(VERSION_12, oldest [i++].Version, "A60:  12th oldest item is incorrect");
 						break;
 					case 12:
-						Assert.AreEqual(VERSION_13, oldest [i++].SemVersion.ToString(), "A60:  13th oldest item is incorrect");
+						Assert.AreEqual(VERSION_13, oldest [i++].Version, "A60:  13th oldest item is incorrect");
 						break;
 					case 13:
-						Assert.AreEqual(VERSION_14, oldest [i++].SemVersion.ToString(), "A60:  14th oldest item is incorrect");
+						Assert.AreEqual(VERSION_14, oldest [i++].Version, "A60:  14th oldest item is incorrect");
 						break;
 					case 14:
-						Assert.AreEqual(MAX_VERSION, oldest [i++].SemVersion.ToString(), "A60:  15th oldest item is incorrect");
+						Assert.AreEqual(MAX_VERSION, oldest [i++].Version, "A60:  15th oldest item is incorrect");
 						break;
 					case 15:
 						Assert.AreEqual(0, oldest.Count);
@@ -273,7 +272,7 @@ namespace Test_SemVer
 		public void KeepNNewVersionsToMany (int n) {
 			var fileSystem = SetupFileSystem();
 
-			SemVerUtil.SemVerUtil semVerUtil = new SemVerUtil.SemVerUtil(fileSystem);
+			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
 			semVerUtil.Initialize(@"C:\", "Ver");
 
 			int max = semVerUtil.VersionCount;

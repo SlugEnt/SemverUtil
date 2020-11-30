@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using Semver;
 
-namespace SemVerUtil
+namespace SlugEnt.SemVer
 {
 
 	public class FileSemVer : IComparable
@@ -34,17 +34,40 @@ namespace SemVerUtil
 			FileName = fileName;
 			Prefix = prefix;
 			SemVerPart = semVerPart;
-			SemVersion = SemVersion.Parse(semVerPart);
-
+			SemVersionProper = SemVersion.Parse(semVerPart);
 		}
 
 
-
+		/// <summary>
+		/// The actual file / folder name with prefix and version information in it.
+		/// </summary>
 		public string FileName { get; private set; }
-		public string Prefix { get; private set; }
-		public string SemVerPart { get; private set; }
-		public SemVersion SemVersion { get; set; }
 
+		/// <summary>
+		/// The prefix that the version folders start with
+		/// </summary>
+		public string Prefix { get; private set; }
+
+		/// <summary>
+		/// What the function determined was the SemVer part of the filename
+		/// </summary>
+		public string SemVerPart { get; private set; }
+
+
+		/// <summary>
+		/// Returns the actual SemVersion object representation of the Version
+		/// </summary>
+		public SemVersion SemVersionProper {
+			get; set;
+		}
+
+
+		/// <summary>
+		/// Returns the SemVersion in its string form, ie:  1.3.7-alpha.13
+		/// </summary>
+		public string Version {
+			get { return SemVersionProper.ToString(); }
+		}
 
 		/// <summary>
 		/// 
@@ -53,7 +76,7 @@ namespace SemVerUtil
 		/// <returns></returns>
 		public int CompareTo(object obj)
 		{
-			return ((IComparable)SemVersion).CompareTo(((FileSemVer)obj).SemVersion);
+			return ((IComparable)SemVersionProper).CompareTo(((FileSemVer)obj).SemVersionProper);
 		}
 	}
 }
