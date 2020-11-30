@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemVerUtil", "SemVerUtil\SemVerUtil.csproj", "{BA3A3467-9E01-4DDC-814F-9AADE5576385}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_SemVer", "..\tests\Test_SemVer\Test_SemVer.csproj", "{9458336C-5A2F-4C62-B17C-F5D1C24F3A0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_SemVer", "..\tests\Test_SemVer\Test_SemVer.csproj", "{9458336C-5A2F-4C62-B17C-F5D1C24F3A0F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7458E58E-FE58-42AD-BF05-154787161BA8}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
