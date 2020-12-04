@@ -94,12 +94,8 @@ namespace Test_SemVer
 		}
 
 
-
-		[TestCase(2)]
-		[TestCase(3)]
-		[TestCase(5)]
 		[Test]
-		public void NewestNVersions (int n) {
+		public void NewestNVersions ([Range(1,4,1)] int n) {
 			var fileSystem = SetupFileSystem();
 
 			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
@@ -130,11 +126,8 @@ namespace Test_SemVer
 		}
 
 
-		[TestCase(2)]
-		[TestCase(3)]
-		[TestCase(5)]
 		[Test]
-		public void OldestNVersions(int n)
+		public void OldestNVersions([Range(0,4,1)] int n)
 		{
 			var fileSystem = SetupFileSystem();
 
@@ -195,11 +188,8 @@ namespace Test_SemVer
 
 
 
-		[TestCase(12)]
-		[TestCase(2)]
-		[TestCase(5)]
 		[Test]
-		public void KeepNNewVersions (int n) {
+		public void KeepNNewVersions ([Range(0,15,1)] int n ) {
 			var fileSystem = SetupFileSystem();
 
 			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
@@ -281,5 +271,106 @@ namespace Test_SemVer
 			Assert.AreEqual(0,oldest.Count,  "A20:  Incorrect number of items");
 		}
 
+
+		[Test]
+		public void InvalidPathThrows () {
+			MockFileSystem fileSystem = SetupFileSystem();
+
+			SemVerUtil semverUtil = new SemVerUtil(fileSystem);
+			;
+			Assert.Throws<ArgumentException>(() => semverUtil.Initialize(@"C:\dummPath", ""));
+		}
+
+
+		[Test]
+		public void NotInitializedThrowsInDirectoryMostRecent()
+		{
+			MockFileSystem fileSystem = SetupFileSystem();
+			SemVerUtil semverUtil = new SemVerUtil(fileSystem);
+			
+			Assert.Throws<ApplicationException>(() => semverUtil.DirectoryMostRecentVersion());
+		}
+
+
+		[Test]
+		public void NotInitializedThrowsInNewest()
+		{
+			MockFileSystem fileSystem = SetupFileSystem();
+			SemVerUtil semverUtil = new SemVerUtil(fileSystem);
+
+			Assert.Throws<ApplicationException>(() => semverUtil.DirectoryNewestVersions(2));
+		}
+
+
+
+		[Test]
+		public void NotInitializedThrowsInOldestVersion()
+		{
+			MockFileSystem fileSystem = SetupFileSystem();
+			SemVerUtil semverUtil = new SemVerUtil(fileSystem);
+
+			Assert.Throws<ApplicationException>(() => semverUtil.DirectoryOldestVersion());
+		}
+
+
+
+
+
+		[Test]
+		public void NotInitializedThrowsInOldestVersions()
+		{
+			MockFileSystem fileSystem = SetupFileSystem();
+			SemVerUtil semverUtil = new SemVerUtil(fileSystem);
+
+			Assert.Throws<ApplicationException>(() => semverUtil.DirectoryOldestVersions(2));
+		}
+
+
+
+
+
+		[Test]
+		public void NotInitializedThrowsInOldestWithMin()
+		{
+			MockFileSystem fileSystem = SetupFileSystem();
+			SemVerUtil semverUtil = new SemVerUtil(fileSystem);
+
+			Assert.Throws<ApplicationException>(() => semverUtil.OldestWithMin(2));
+		}
+
+
+
+
+
+		[Test]
+		public void DirectoryOldestCountLessThanKeep()
+		{
+			MockFileSystem fileSystem = SetupFileSystem();
+			SemVerUtil semverUtil = new SemVerUtil(fileSystem);
+			semverUtil.Initialize(@"C:\","Ver");
+			int versionCount = fileSystem.Directory.GetDirectories(@"C:\", "Ver*").Length;
+
+
+			// This is requesting we keep 25 versions, but we only have 15 in directory...
+			List<FileSemVer> versions = semverUtil.DirectoryOldestVersions(25);
+			Assert.AreEqual(versionCount,versions.Count);
+		}
+
+
+
+
+		[Test]
+		public void DirectoryNewestCountLessThanKeep()
+		{
+			MockFileSystem fileSystem = SetupFileSystem();
+			SemVerUtil semverUtil = new SemVerUtil(fileSystem);
+			semverUtil.Initialize(@"C:\", "Ver");
+			int versionCount = fileSystem.Directory.GetDirectories(@"C:\", "Ver*").Length;
+
+
+			// This is requesting we keep 25 versions, but we only have 15 in directory...
+			List<FileSemVer> versions = semverUtil.DirectoryNewestVersions(25);
+			Assert.AreEqual(versionCount, versions.Count);
+		}
 	}
 }
