@@ -18,12 +18,12 @@ namespace SlugEnt.SemVer
 		public FileSemVer (string fileName, string prefix = "") {
 			if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("PathName cannot be null, must specify the fileName of a fully qualified path.");
 
-			string semVerPart = "";
+			string semVerPart;
 			string nameOnly = Path.GetFileName(fileName);
 
 			if ( prefix != string.Empty ) {
 				if ( !nameOnly.StartsWith(prefix)) 
-					throw new ArgumentException(string.Format("PathName [{fileName}] did not start with the specified prefix [{prefix}]"));
+					throw new ArgumentException(string.Format("PathName [{0}] did not start with the specified prefix [{1}]",fileName,prefix));
 
 				semVerPart = nameOnly.Substring(prefix.Length);
 			}

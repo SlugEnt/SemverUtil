@@ -49,7 +49,26 @@ namespace Test_SemVer
 
 			Assert.AreEqual( name ,fileSemVer.FileName,"A10:");
 			Assert.AreEqual(prefix,fileSemVer.Prefix,"A20:");
+			Assert.AreEqual(expectedSemVer,fileSemVer.SemVerPart,"A30:");
 			Assert.AreEqual(expectedSemVer,fileSemVer.Version,"A40:");
+
+		}
+
+
+		[Test]
+		public void NonMatchingNameWithPrefixThrows () {
+			FileSemVer fileSemVer;
+			Assert.Throws<ArgumentException>(() => fileSemVer = new FileSemVer("ABC1.2.3","Ver"));
+
+		}
+
+
+		// No Prefix, just a number works
+		[Test]
+		public void NoPrefixMatchesNumberOnly () {
+			FileSemVer fileSemVer;
+			fileSemVer = new FileSemVer("1.2.3");
+			Assert.AreEqual("1.2.3",fileSemVer.SemVersionProper.ToString());
 		}
 
 	}
