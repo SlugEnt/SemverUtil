@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyVersion>1.0.0.32</AssemblyVersion>
+    <AssemblyName>SlugEnt.SemVerUtil</AssemblyName>
+    <RootNamespace>SlugEnt.SemVer</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="semver" Version="2.0.6" />
+    <PackageReference Include="SlugEnt.TimeUnit" Version="1.2.0" />
+    <PackageReference Include="System.IO.Abstractions" Version="13.2.2" />
+  </ItemGroup>
+
+</Project>
