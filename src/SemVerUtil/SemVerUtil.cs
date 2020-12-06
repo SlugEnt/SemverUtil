@@ -121,7 +121,8 @@ namespace SlugEnt.SemVer
 
 
 		/// <summary>
-		/// Returns a list of FileSemVer objects that represent the oldest n versions after ensuring there is a numberOfNewest latest versions in the list.  So, a list with 6 items, with a passed in numberOfNewest of 4 would return the 2 oldest.  
+		/// Returns a list of FileSemVer objects that represent the oldest n versions after ensuring there is a numberOfNewest latest versions in the list.
+		/// So, a list with 6 items, with a passed in numberOfNewest of 4 would return the 2 oldest.  
 		/// </summary>
 		/// <param name="numberOfNewest">This returns all the oldest items in the list after ensuring a minimum number of the latest versions are kept.</param>
 		/// <returns>Empty list if the versions list contains no items or contains less than or equal to the numberOfNewest items </returns>
@@ -135,6 +136,32 @@ namespace SlugEnt.SemVer
 
 			int oldMax = _versions.Count - numberOfNewest;
 			oldest.AddRange(_versions.GetRange(0, oldMax));
+			return oldest;
+		}
+
+
+
+		/// <summary>
+		/// Returns a list of the oldest Semantic versions, keeping a minimum number of the newest as well as keeping anything newer than the minAgeToKeep
+		/// </summary>
+		/// <param name="numberOfNewestToKeep">The minimum number of the newest versions that should be kept</param>
+		/// <param name="minAgeToKeep">The minimum age from right now to keep versions.  For instance 3d would ensure that any version that is newer than 3 days would be kept.</param>
+		/// <returns></returns>
+		public List<FileSemVer> OldestWithMinAge (int numberOfNewestToKeep, TimeUnit minAgeToKeep) {
+			// First just get the oldest that meet the minimum number to keep
+			List<FileSemVer> oldest = OldestWithMin(numberOfNewestToKeep);
+
+			long seconds = -1 * (minAgeToKeep.InSecondsLong);
+			DateTime threshold = DateTime.Now.AddSeconds(seconds);
+
+			// Now go thru the list and remove any that do not meet the Age requirement
+			for (int i= oldest.Count -1; i >= 0; i--) {
+				FileSemVer fileSemVer = oldest [i];
+				DateTime created =  _fileSystem.File.GetCreationTime(fileSemVer.FileName);
+
+				// If the item does not meet the minimum age requirement we delete it from the list.
+				if ( created > threshold ) { oldest.RemoveAt(i);}
+			}
 			return oldest;
 		}
 	}

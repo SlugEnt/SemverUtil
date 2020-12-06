@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Abstractions;
 using System.Text;
 using System.IO.Abstractions.TestingHelpers;
 using NUnit.Framework;
+using SlugEnt;
 using SlugEnt.SemVer;
 
 namespace Test_SemVer
@@ -269,6 +272,58 @@ namespace Test_SemVer
 			Assert.Greater(n,max,"A10:");
 			List<FileSemVer> oldest = semVerUtil.OldestWithMin(n);
 			Assert.AreEqual(0,oldest.Count,  "A20:  Incorrect number of items");
+		}
+
+
+		[Test]
+		public void KeepNNewVersionsTimeStamp () {
+			// Setup
+			TimeUnit day2plus3hr = new TimeUnit("2d");
+			day2plus3hr.AddHours(3);
+
+			var fileSystem = new MockFileSystem();
+			DateTime d5 = DateTime.Now.AddDays(-5);
+			DateTime d4 = DateTime.Now.AddDays(-4);
+			DateTime d3 = DateTime.Now.AddDays(-3);
+			DateTime d2 = DateTime.Now.AddSeconds(day2plus3hr);
+			DateTime d1 = DateTime.Now.AddDays(-1);
+			DateTime d020 = DateTime.Now.AddHours(-20);
+			DateTime d010 = DateTime.Now.AddHours(-10);
+			DateTime d04 = DateTime.Now.AddHours(-4);
+			DateTime d02 = DateTime.Now.AddHours(-2);
+
+
+			AddVerDirectory(fileSystem, FIRST_VERSION, d5);
+			AddVerDirectory(fileSystem, VERSION_2, d4);
+			AddVerDirectory(fileSystem, VERSION_3, d3);
+			AddVerDirectory(fileSystem, VERSION_4, d2);
+			AddVerDirectory(fileSystem, VERSION_5, d1);
+			AddVerDirectory(fileSystem, VERSION_6, d020);
+			AddVerDirectory(fileSystem, VERSION_7, d010);
+			AddVerDirectory(fileSystem, VERSION_8, d04);
+			AddVerDirectory(fileSystem, VERSION_9, d02);
+
+			fileSystem.AddFile(@"C:\Ver1.3.0\Ver.txt", new MockFileData("some data in a file"));
+
+			// Test
+			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
+			semVerUtil.Initialize(@"C:\", "Ver");
+
+			int max = semVerUtil.VersionCount;
+			int minToKeep = 3;
+			
+			List<FileSemVer> oldest = semVerUtil.OldestWithMinAge(minToKeep, new TimeUnit("2d"));
+			Assert.AreEqual(3, oldest.Count, "A10:  Incorrect number of items");
+			Assert.AreEqual(FIRST_VERSION, oldest[0].Version, "A20:  Oldest item is incorrect");
+			Assert.AreEqual(VERSION_2, oldest[1].Version, "A30:  item is incorrect");
+			Assert.AreEqual(VERSION_3, oldest[2].Version, "A40:  item is incorrect");
+		}
+
+
+		private void AddVerDirectory (MockFileSystem fileSystem, string nameSuffix, DateTime timeStamp) {
+			string name = @"C:\\Ver" + nameSuffix;
+			fileSystem.Directory.CreateDirectory(name);
+			fileSystem.Directory.SetCreationTime(name,timeStamp);
 		}
 
 
