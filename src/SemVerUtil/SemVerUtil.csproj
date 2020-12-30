@@ -5,6 +5,7 @@
     <AssemblyVersion>1.0.0.33</AssemblyVersion>
     <AssemblyName>SlugEnt.SemVerUtil</AssemblyName>
     <RootNamespace>SlugEnt.SemVer</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
