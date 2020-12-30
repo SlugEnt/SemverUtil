@@ -276,16 +276,21 @@ namespace Test_SemVer
 
 
 		[Test]
-		public void KeepNNewVersionsTimeStamp () {
+		public void OldestMinAge () {
 			// Setup
 			TimeUnit day2plus3hr = new TimeUnit("2d");
 			day2plus3hr.AddHours(3);
 
 			var fileSystem = new MockFileSystem();
+			DateTime d7 = DateTime.Now.AddDays(-7);
+			DateTime d6 = DateTime.Now.AddDays(-6);
 			DateTime d5 = DateTime.Now.AddDays(-5);
 			DateTime d4 = DateTime.Now.AddDays(-4);
+			// Everything below this should be kept because of min number plus minage.
 			DateTime d3 = DateTime.Now.AddDays(-3);
-			DateTime d2 = DateTime.Now.AddSeconds(day2plus3hr);
+			DateTime d2plus = DateTime.Now.AddSeconds(day2plus3hr);
+			// Everything below this should be kept due to min age.
+			DateTime d2 = DateTime.Now.AddDays(-2);
 			DateTime d1 = DateTime.Now.AddDays(-1);
 			DateTime d020 = DateTime.Now.AddHours(-20);
 			DateTime d010 = DateTime.Now.AddHours(-10);
@@ -293,15 +298,18 @@ namespace Test_SemVer
 			DateTime d02 = DateTime.Now.AddHours(-2);
 
 
-			AddVerDirectory(fileSystem, FIRST_VERSION, d5);
-			AddVerDirectory(fileSystem, VERSION_2, d4);
-			AddVerDirectory(fileSystem, VERSION_3, d3);
-			AddVerDirectory(fileSystem, VERSION_4, d2);
-			AddVerDirectory(fileSystem, VERSION_5, d1);
-			AddVerDirectory(fileSystem, VERSION_6, d020);
-			AddVerDirectory(fileSystem, VERSION_7, d010);
-			AddVerDirectory(fileSystem, VERSION_8, d04);
-			AddVerDirectory(fileSystem, VERSION_9, d02);
+			AddVerDirectory(fileSystem, FIRST_VERSION, d7);
+			AddVerDirectory(fileSystem, VERSION_2, d6);
+			AddVerDirectory(fileSystem, VERSION_3, d5);
+			AddVerDirectory(fileSystem, VERSION_4, d4);
+			AddVerDirectory(fileSystem, VERSION_5, d3);
+			AddVerDirectory(fileSystem, VERSION_6, d2plus);
+			AddVerDirectory(fileSystem, VERSION_7, d2);
+			AddVerDirectory(fileSystem, VERSION_8, d1);
+			AddVerDirectory(fileSystem, VERSION_9, d020);
+			AddVerDirectory(fileSystem, VERSION_10, d010);
+			AddVerDirectory(fileSystem, VERSION_11, d04);
+			AddVerDirectory(fileSystem, VERSION_12, d02);
 
 			fileSystem.AddFile(@"C:\Ver1.3.0\Ver.txt", new MockFileData("some data in a file"));
 
@@ -309,14 +317,14 @@ namespace Test_SemVer
 			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
 			semVerUtil.Initialize(@"C:\", "Ver");
 
-			int max = semVerUtil.VersionCount;
 			int minToKeep = 3;
 			
 			List<FileSemVer> oldest = semVerUtil.OldestWithMinAge(minToKeep, new TimeUnit("2d"));
-			Assert.AreEqual(3, oldest.Count, "A10:  Incorrect number of items");
+			Assert.AreEqual(4, oldest.Count, "A10:  Incorrect number of items");
 			Assert.AreEqual(FIRST_VERSION, oldest[0].Version, "A20:  Oldest item is incorrect");
 			Assert.AreEqual(VERSION_2, oldest[1].Version, "A30:  item is incorrect");
 			Assert.AreEqual(VERSION_3, oldest[2].Version, "A40:  item is incorrect");
+			Assert.AreEqual(VERSION_4, oldest[3].Version, "A50:  item is incorrect");
 		}
 
 
