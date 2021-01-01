@@ -81,5 +81,14 @@ namespace Test_SemVer
 			if (versionA < versionB) Console.WriteLine("Less than");
 			else Console.WriteLine("Greater than");
 		}
+
+
+		[Test]
+		public void ToStringTest () {
+			string VERSION = "1.2.3";
+
+			FileSemVer fileSemVer = new FileSemVer(VERSION);
+			Assert.AreEqual(VERSION,fileSemVer.ToString(),"A10:");
+		}
 	}
 }
