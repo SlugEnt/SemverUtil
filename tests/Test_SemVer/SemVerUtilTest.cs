@@ -346,7 +346,7 @@ namespace Test_SemVer
 			// Test
 			//  - Should return 5
 			List<FileSemVer> oldest = semVerUtil.OldestWithMinAge(2, new TimeUnit("4d"));
-			Assert.AreEqual(5, oldest.Count, "A5:  Incorrect number of items");
+			Assert.AreEqual(max - 5, oldest.Count, "A5:  Incorrect number of items");
 
 		}
 
