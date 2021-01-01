@@ -175,6 +175,8 @@ namespace SlugEnt.SemVer
 
 		/// <summary>
 		/// Returns a list of the oldest Semantic versions, keeping a minimum number of the newest as well as keeping anything newer than the minAgeToKeep.  Basically keeps anything newer than MinAgeToKeep and then numberOfNewestToKeep after that.
+		/// <para>It divides the list into 2 buckets.  Those that meet the age requirement, are considered 1 entry.  The 2nd bucket it NumberOfNewestToKeep minus 1.  So if NumberOfNewest is 4 and 7 items meet the age requirement we could
+		/// potentially keep the 7 newest plus 3 more (4 to keep minus the 7 newest (But we treat the 7 as 1 entry) for a total of 10 items...</para>
 		/// </summary>
 		/// <param name="numberOfNewestToKeep">The minimum number of the newest versions that should be kept</param>
 		/// <param name="minAgeToKeep">The minimum age from right now that forces us to keep all of these versions.  For instance 3d would ensure that any version that is newer than 3 days would be kept.</param>
@@ -182,7 +184,7 @@ namespace SlugEnt.SemVer
 		public List<FileSemVer> OldestWithMinAge (int numberOfNewestToKeep, TimeUnit minAgeToKeep) {
 			// A.  First just get the oldest that meet the minimum number to keep
 			List<FileSemVer> oldest = OldestWithMin(numberOfNewestToKeep);
-			int oldestCount = oldest.Count;
+			int startingCount = oldest.Count;
 
 			long seconds = -1 * (minAgeToKeep.InSecondsLong);
 			DateTime threshold = DateTime.Now.AddSeconds(seconds);
@@ -199,8 +201,13 @@ namespace SlugEnt.SemVer
 			// C.  Now remove any that do not meet the numberOfNewestToKeep.
 
 			// We treat all the min age versions as though they were just 1 version.  
-			if ( oldest.Count != oldestCount ) numberOfNewestToKeep--;
-			return OldestWithMin(numberOfNewestToKeep, oldest);
+			if ( oldest.Count != startingCount ) {
+				numberOfNewestToKeep--; 
+				return OldestWithMin(numberOfNewestToKeep, oldest);
+			}
+
+			return oldest;
+
 		}
 	}
 }

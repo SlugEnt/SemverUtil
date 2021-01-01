@@ -50,28 +50,52 @@ namespace Test_SemVer
 		private MockFileSystem SetupFileSystem() {
 			var fileSystem = new MockFileSystem();
 
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + FIRST_VERSION);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_2);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_3);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_4);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_5);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_6);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_7);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_8);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_9);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_10);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_11);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_12);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_13);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_14);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_15);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_16);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_17);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_18);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_19);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_20);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + VERSION_21);
-			fileSystem.Directory.CreateDirectory(@"C:\\Ver" + MAX_VERSION);
+			// Create Versioned folders each of which is 1 day and older than previous
+			// We create first one 30 minutes older so that if debugging the code you have 30 minutes to debug...
+			DateTime versionedFolderDateTime = DateTime.Now.AddMinutes(-30);
+			AddVerDirectory(fileSystem, MAX_VERSION, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_21, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_20, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_19, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_18, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_17, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_16, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_15, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_14, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_13, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_12, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_11, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_10, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_9, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_8, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_7, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_6, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_5, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_4, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_3, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, VERSION_2, versionedFolderDateTime);
+			versionedFolderDateTime = versionedFolderDateTime.AddDays(-1);
+			AddVerDirectory(fileSystem, FIRST_VERSION, versionedFolderDateTime);
 			
 			fileSystem.AddFile(@"C:\Ver1.3.0\Ver.txt",new MockFileData("some data in a file"));
 			return fileSystem;
@@ -205,8 +229,9 @@ namespace Test_SemVer
 
 
 
+
 		[Test]
-		public void OldestWithMin_N_Versions ([Range(0,22,1)] int n ) {
+		public void OldestWithMin_N_Versions ([Range(0, 22, 1)] int n) {
 			var fileSystem = SetupFileSystem();
 
 			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
@@ -217,8 +242,7 @@ namespace Test_SemVer
 			List<FileSemVer> oldest = semVerUtil.OldestWithMin(n);
 			Assert.AreEqual(max - n, oldest.Count, "A5:  Incorrect number of items");
 
-			for (int i = 0; i < (max -n); i++)
-			{
+			for ( int i = 0; i < (max - n); i++ ) {
 				switch ( i ) {
 					case 0:
 						Assert.AreEqual(FIRST_VERSION, oldest [i].Version, "A100:  Oldest item is incorrect");
@@ -263,6 +287,134 @@ namespace Test_SemVer
 						Assert.AreEqual(VERSION_14, oldest [i].Version, "A230:  14th oldest item is incorrect");
 						break;
 					case 14:
+						Assert.AreEqual(VERSION_15, oldest [i].Version, "A240:  15th oldest item is incorrect");
+						break;
+					case 15:
+						Assert.AreEqual(VERSION_16, oldest [i].Version, "A250:  16th oldest item is incorrect");
+						break;
+					case 16:
+						Assert.AreEqual(VERSION_17, oldest [i].Version, "A260:  17th oldest item is incorrect");
+						break;
+					case 17:
+						Assert.AreEqual(VERSION_18, oldest [i].Version, "A270:  18th oldest item is incorrect");
+						break;
+					case 18:
+						Assert.AreEqual(VERSION_19, oldest [i].Version, "A280:  19th oldest item is incorrect");
+						break;
+					case 19:
+						Assert.AreEqual(VERSION_20, oldest [i].Version, "A290:  20th oldest item is incorrect");
+						break;
+					case 20:
+						Assert.AreEqual(VERSION_21, oldest [i].Version, "A300:  21st oldest item is incorrect");
+						break;
+					case 21:
+						Assert.AreEqual(MAX_VERSION, oldest [i].Version, "A310:  22dn oldest item is incorrect");
+						break;
+					case 22:
+						Assert.AreEqual(0, oldest.Count);
+						break;
+				}
+			}
+		}
+
+
+		[Test]
+		public void OldestWithMinAge_AllWithinAgeTimeFrame () {
+			var fileSystem = SetupFileSystem();
+
+			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
+			semVerUtil.Initialize(@"C:\", "Ver");
+
+			// Test.
+			//  - Should be zero returned as they all fall within the age limit.
+			List<FileSemVer> oldest = semVerUtil.OldestWithMinAge(4, new TimeUnit("4w"));
+			Assert.AreEqual(0, oldest.Count, "A5:  Incorrect number of items");
+		}
+
+
+		[Test]
+		public void OldestWithMin_nAge_Variant () {
+			var fileSystem = SetupFileSystem();
+
+			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
+			semVerUtil.Initialize(@"C:\", "Ver");
+
+			int max = semVerUtil.VersionCount;
+			TimeUnit time = new TimeUnit();
+			time = time.AddDays(4);
+
+			// Test
+			//  - Should return 5
+			List<FileSemVer> oldest = semVerUtil.OldestWithMinAge(2, new TimeUnit("4d"));
+			Assert.AreEqual(5, oldest.Count, "A5:  Incorrect number of items");
+
+		}
+
+
+
+		// Test that it returns the correct entries with OldestWithMinAge
+		[Test]
+		public void OldestWithMin_NAge_Versions([Range(0, 21, 1)] int n) {
+			// We are not zero based when calling.
+			n++;
+			var fileSystem = SetupFileSystem();
+
+			SemVerUtil semVerUtil = new SemVerUtil(fileSystem);
+			semVerUtil.Initialize(@"C:\", "Ver");
+
+			int max = semVerUtil.VersionCount;
+			TimeUnit time = new TimeUnit();
+			time = time.AddDays(n);
+			List<FileSemVer> oldest = semVerUtil.OldestWithMinAge(n,time);
+			Assert.AreEqual(max - n, oldest.Count, "A5:  Incorrect number of items");
+
+			for (int i = 0; i < (max - n); i++)
+			{
+				switch (i)
+				{
+					case 0:
+						Assert.AreEqual(FIRST_VERSION, oldest[i].Version, "A100:  Oldest item is incorrect");
+						break;
+					case 1:
+						Assert.AreEqual(VERSION_2, oldest[i].Version, "A110:  2nd Oldest item is incorrect");
+						break;
+					case 2:
+						Assert.AreEqual(VERSION_3, oldest[i].Version, "A120:  3rd oldest item is incorrect");
+						break;
+					case 3:
+						Assert.AreEqual(VERSION_4, oldest[i].Version, "A130:  4th oldest item is incorrect");
+						break;
+					case 4:
+						Assert.AreEqual(VERSION_5, oldest[i].Version, "A140:  5th oldest item is incorrect");
+						break;
+					case 5:
+						Assert.AreEqual(VERSION_6, oldest[i].Version, "A150:  6th oldest item is incorrect");
+						break;
+					case 6:
+						Assert.AreEqual(VERSION_7, oldest[i].Version, "A160:  7th oldest item is incorrect");
+						break;
+					case 7:
+						Assert.AreEqual(VERSION_8, oldest[i].Version, "A170:  8th oldest item is incorrect");
+						break;
+					case 8:
+						Assert.AreEqual(VERSION_9, oldest[i].Version, "A180:  9th oldest item is incorrect");
+						break;
+					case 9:
+						Assert.AreEqual(VERSION_10, oldest[i].Version, "A190:  10th oldest item is incorrect");
+						break;
+					case 10:
+						Assert.AreEqual(VERSION_11, oldest[i].Version, "A200:  11th oldest item is incorrect");
+						break;
+					case 11:
+						Assert.AreEqual(VERSION_12, oldest[i].Version, "A210:  12th oldest item is incorrect");
+						break;
+					case 12:
+						Assert.AreEqual(VERSION_13, oldest[i].Version, "A220:  13th oldest item is incorrect");
+						break;
+					case 13:
+						Assert.AreEqual(VERSION_14, oldest[i].Version, "A230:  14th oldest item is incorrect");
+						break;
+					case 14:
 						Assert.AreEqual(VERSION_15, oldest[i].Version, "A240:  15th oldest item is incorrect");
 						break;
 					case 15:
@@ -284,12 +436,13 @@ namespace Test_SemVer
 						Assert.AreEqual(VERSION_21, oldest[i].Version, "A300:  21st oldest item is incorrect");
 						break;
 					case 21:
-						Assert.AreEqual(MAX_VERSION, oldest [i].Version, "A310:  22dn oldest item is incorrect");
+						Assert.AreEqual(MAX_VERSION, oldest[i].Version, "A310:  22dn oldest item is incorrect");
 						break;
 					case 22:
 						Assert.AreEqual(0, oldest.Count);
 						break;
 				}
+
 			}
 		}
 
