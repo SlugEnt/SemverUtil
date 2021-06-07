@@ -7,11 +7,19 @@ using System.Linq;
 
 namespace SlugEnt.SemVer
 {
+	/// <summary>
+	/// Class that provides Semantic Versioning functionality to help manage Folders that represent a Semantic Version.
+	/// <para> Typically this is when developed applications are deployed into Semantic Version folders that then need to be managed.</para>
+	/// <para> This includes finding the latest version and purging older versions.</para>
+	/// </summary>
 	public  class SemVerUtil {
 		private readonly IFileSystem _fileSystem;
 		private List<FileSemVer> _versions;
 
-
+		/// <summary>
+		/// Constructs a SemVerUtil object with the given FileSystem.  Used for Unit Tests
+		/// </summary>
+		/// <param name="fileSystem"></param>
 		public SemVerUtil (IFileSystem fileSystem) { _fileSystem = fileSystem; }
 
 
@@ -21,6 +29,10 @@ namespace SlugEnt.SemVer
 		/// </summary>
 		public bool IsInitialized { get; private set; }
 
+
+		/// <summary>
+		/// The number of Version Folders
+		/// </summary>
 		public int VersionCount { get; private set; }
 
 
@@ -28,7 +40,7 @@ namespace SlugEnt.SemVer
 		/// Initializes the object
 		/// </summary>
 		/// <param name="path">The Directory that contains the Versioned folders</param>
-		/// <param name="prefix"></param>
+		/// <param name="prefix">The prefix that identifies a "semver" folder.  The part of the name that occurs before the Semantic Version part.  For instance if all the semver folders start with Ver then that is the prefix.  Ver1.0.2, Ver2.0.4-alpha.2</param>
 		public void Initialize (string path, string prefix) {
 			// Reset list to empty.
 			_versions =  new List<FileSemVer>();
@@ -102,7 +114,7 @@ namespace SlugEnt.SemVer
 
 
 		/// <summary>
-		/// Returns the oldest N number of versions.  So 3, would return the oldest versions.
+		/// Returns the oldest N number of versions.
 		/// </summary>
 		/// <param name="numberOfOldest">The number of oldest n versions to return.</param>
 		/// <returns>List of FileSemVer objects of the n oldest versions.  They are listed in oldest to newest order.  Returns null if there are no versions.</returns>
@@ -129,6 +141,8 @@ namespace SlugEnt.SemVer
 		public List<FileSemVer> OldestWithMin (int numberOfNewest) {
 			if (!IsInitialized) throw new ApplicationException("The SemVerUtil object has not been initialized.");
 
+			return OldestWithMin(numberOfNewest, _versions);
+			/*
 			List<FileSemVer> oldest = new List<FileSemVer>();
 
 			if (_versions.Count == 0) return oldest;
@@ -137,24 +151,45 @@ namespace SlugEnt.SemVer
 			int oldMax = _versions.Count - numberOfNewest;
 			oldest.AddRange(_versions.GetRange(0, oldMax));
 			return oldest;
+			*/
 		}
 
 
+		/// <summary>
+		/// Returns the oldest versions in the provided list, ensuring at least numberOfNewest versions are kept in the list.
+		/// </summary>
+		/// <param name="numberOfNewest">This returns all the oldest items in the list after ensuring a minimum number of the latest versions are kept.</param>
+		/// <param name="versionList">The FileSemVer list of versions</param>
+		/// <returns></returns>
+		private List<FileSemVer> OldestWithMin (int numberOfNewest, List<FileSemVer> versionList) {
+			List<FileSemVer> oldest = new List<FileSemVer>();
+
+			if (versionList.Count == 0) return oldest;
+			if (versionList.Count <= numberOfNewest) return oldest;
+
+			int oldMax = versionList.Count - numberOfNewest;
+			oldest.AddRange(versionList.GetRange(0, oldMax));
+			return oldest;
+		}
+
 
 		/// <summary>
-		/// Returns a list of the oldest Semantic versions, keeping a minimum number of the newest as well as keeping anything newer than the minAgeToKeep
+		/// Returns a list of the oldest Semantic versions, keeping a minimum number of the newest as well as keeping anything newer than the minAgeToKeep.  Basically keeps anything newer than MinAgeToKeep and then numberOfNewestToKeep after that.
+		/// <para>It divides the list into 2 buckets.  Those that meet the age requirement, are considered 1 entry.  The 2nd bucket it NumberOfNewestToKeep minus 1.  So if NumberOfNewest is 4 and 7 items meet the age requirement we could
+		/// potentially keep the 7 newest plus 3 more (4 to keep minus the 7 newest (But we treat the 7 as 1 entry) for a total of 10 items...</para>
 		/// </summary>
 		/// <param name="numberOfNewestToKeep">The minimum number of the newest versions that should be kept</param>
-		/// <param name="minAgeToKeep">The minimum age from right now to keep versions.  For instance 3d would ensure that any version that is newer than 3 days would be kept.</param>
+		/// <param name="minAgeToKeep">The minimum age from right now that forces us to keep all of these versions.  For instance 3d would ensure that any version that is newer than 3 days would be kept.</param>
 		/// <returns></returns>
 		public List<FileSemVer> OldestWithMinAge (int numberOfNewestToKeep, TimeUnit minAgeToKeep) {
-			// First just get the oldest that meet the minimum number to keep
+			// A.  First just get the oldest that meet the minimum number to keep
 			List<FileSemVer> oldest = OldestWithMin(numberOfNewestToKeep);
+			int startingCount = oldest.Count;
 
 			long seconds = -1 * (minAgeToKeep.InSecondsLong);
 			DateTime threshold = DateTime.Now.AddSeconds(seconds);
 
-			// Now go thru the list and remove any that do not meet the Age requirement
+			// B.  Now go thru the list and remove any that are newer than the age requirement.
 			for (int i= oldest.Count -1; i >= 0; i--) {
 				FileSemVer fileSemVer = oldest [i];
 				DateTime created =  _fileSystem.File.GetCreationTime(fileSemVer.FileName);
@@ -162,7 +197,17 @@ namespace SlugEnt.SemVer
 				// If the item does not meet the minimum age requirement we delete it from the list.
 				if ( created > threshold ) { oldest.RemoveAt(i);}
 			}
+
+			// C.  Now remove any that do not meet the numberOfNewestToKeep.
+
+			// We treat all the min age versions as though they were just 1 version.  
+			if ( oldest.Count != startingCount ) {
+				numberOfNewestToKeep--; 
+				return OldestWithMin(numberOfNewestToKeep, oldest);
+			}
+
 			return oldest;
+
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using NUnit.Framework;
+using Semver;
 using SlugEnt.SemVer;
 
 
@@ -71,5 +72,23 @@ namespace Test_SemVer
 			Assert.AreEqual("1.2.3",fileSemVer.SemVersionProper.ToString());
 		}
 
+		[Test]
+		public void dummy ()
+		{
+			SemVersion versionA = new SemVersion(1,2,3,"Release","30");
+			SemVersion versionB = new SemVersion(1, 2, 3, "Beta", "30");
+
+			if (versionA < versionB) Console.WriteLine("Less than");
+			else Console.WriteLine("Greater than");
+		}
+
+
+		[Test]
+		public void ToStringTest () {
+			string VERSION = "1.2.3";
+
+			FileSemVer fileSemVer = new FileSemVer(VERSION);
+			Assert.AreEqual(VERSION,fileSemVer.ToString(),"A10:");
+		}
 	}
 }

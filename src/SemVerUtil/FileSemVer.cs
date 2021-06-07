@@ -13,8 +13,8 @@ namespace SlugEnt.SemVer
 		/// <summary>
 		/// Constructs a FileSemVer object
 		/// </summary>
-		/// <param fileName="fileName">the fileName of the item that contains the semver2 string</param>
-		/// <param fileName="prefix">Any prefix that occurs before the semver2 portion of the string, for instance this might be a filename, app fileName or some version prefix that you use.</param>
+		/// <param name="fileName">FileName of the item that contains the semver2 string</param>
+		/// <param name="prefix">Any prefix that occurs before the semver2 portion of the string, for instance this might be a filename, app fileName or some version prefix that you use.</param>
 		public FileSemVer (string fileName, string prefix = "") {
 			if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("PathName cannot be null, must specify the fileName of a fully qualified path.");
 
@@ -78,5 +78,8 @@ namespace SlugEnt.SemVer
 		{
 			return ((IComparable)SemVersionProper).CompareTo(((FileSemVer)obj).SemVersionProper);
 		}
+
+
+		public override string ToString () { return Version; }
 	}
 }
